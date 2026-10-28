@@ -1,0 +1,15 @@
+{
+  "name": "aicte-kosh-blockchain-ledger",
+  "version": "2.6.4",
+  "type": "module",
+  "description": "NIST FIPS 180-4 SHA-256 Tamper-Proof Audit Ledger & Smart Contract Escrow Simulator",
+  "main": "ledger_engine.js",
+  "scripts": {
+    "verify": "node verify_audit_trail.js",
+    "test-merkle": "node merkle_tree.js",
+    "test-escrow": "node smart_contract_simulator.js"
+  },
+  "keywords": ["audit-trail", "sha256", "blockchain", "merkle-tree", "aicte", "smart-contract"],
+  "author": "Mariyon Decosta L",
+  "license": "MIT"
+}
