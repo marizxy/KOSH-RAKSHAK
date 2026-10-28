@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+/* Authentic Indian GovTech Data Table & Form Styles */
+.gov-table th {
+  background-color: #EAE8E1;
+  color: #1E293B;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #D4D1C7;
+  padding: 0.625rem 0.75rem;
+}
+
+.gov-table td {
+  border-bottom: 1px solid #EAE8E1;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.gov-table tr:hover td {
+  background-color: #F8F7F4;
+}
+
+/* Green Sheet specific paper texture */
+.green-sheet {
+  background-color: #EBF5EE;
+  border: 1px solid #B7D5C4;
+  box-shadow: inset 0 0 40px rgba(20, 83, 45, 0.03);
+}
+
+/* Official Seal Watermark */
+.gov-watermark {
+  background-image: radial-gradient(circle, rgba(20, 83, 45, 0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* High-precision ELA pixel simulation grid */
+.ela-grid {
+  background-size: 8px 8px;
+  background-image: 
+    linear-gradient(to right, rgba(220, 38, 38, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(220, 38, 38, 0.15) 1px, transparent 1px);
+}
+
+/* Monospace Rupee Figures */
+.rupee-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Print styling for Official Release Order */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-release-order, #printable-release-order * {
+    visibility: visible;
+  }
+  #printable-release-order {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+  }
+}

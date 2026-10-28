@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. PostgreSQL 16 Enterprise Database
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: kosh_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aicte_kosh_rakshak_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seeds/sample_fdrs.sql:/docker-entrypoint-initdb.d/02-seeds.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d aicte_kosh_rakshak_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kosh-net
+
+  # ----------------------------------------------------------------------------
+  # 2. Redis 7 In-Memory Cache & Pub/Sub Queue
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: kosh_redis
+    restart: unless-stopped
+    command: redis-server --requirepass redis_auth_token_kosh_2026
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis_auth_token_kosh_2026", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kosh-net
+
+  # ----------------------------------------------------------------------------
+  # 3. Node.js Express REST Backend & Cryptographic Ledger Engine
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../devops/Dockerfile.backend
+    container_name: kosh_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATABASE_URL: postgresql://postgres:postgres_secure_password_2026@postgres:5432/aicte_kosh_rakshak_db
+      REDIS_URL: redis://:redis_auth_token_kosh_2026@redis:6379/0
+      JWT_SECRET: aicte_kosh_rakshak_super_secret_jwt_hmac512_key_2026_production
+      AI_FORENSICS_SERVICE_URL: http://ai-forensics:8000
+    ports:
+      - "8080:8080"
+    networks:
+      - kosh-net
+
+  # ----------------------------------------------------------------------------
+  # 4. Python FastAPI AI Forensics Microservice (ELA & OCR Pipeline)
+  # ----------------------------------------------------------------------------
+  ai-forensics:
+    build:
+      context: ./ai-forensics
+      dockerfile: ../devops/Dockerfile.ai
+    container_name: kosh_ai_forensics
+    restart: unless-stopped
+    environment:
+      PORT: 8000
+      PYTHONUNBUFFERED: 1
+      ELA_SCALE_FACTOR: 15
+    ports:
+      - "8000:8000"
+    networks:
+      - kosh-net
+
+  # ----------------------------------------------------------------------------
+  # 5. React / Vite Frontend Application (Nginx Alpine)
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: ./devops/Dockerfile.frontend
+    container_name: kosh_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    networks:
+      - kosh-net
+
+  # ----------------------------------------------------------------------------
+  # 6. MinIO Encrypted S3 Document Vault (FDR Scanned PDF Storage)
+  # ----------------------------------------------------------------------------
+  minio:
+    image: minio/minio:RELEASE.2024-01-18T22-51-28Z
+    container_name: kosh_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio_kosh_access_key
+      MINIO_ROOT_PASSWORD: minio_kosh_secret_key_2026
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    networks:
+      - kosh-net
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
+
+networks:
+  kosh-net:
+    driver: bridge

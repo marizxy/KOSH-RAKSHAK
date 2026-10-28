@@ -1,0 +1,42 @@
+name: Frontend CI & Production Build Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-verify:
+    name: Build React/Vite Portal & Type Check
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 18.x, 20.x ]
+
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Verify TypeScript Compilation (Strict Mode)
+        run: npx tsc --noEmit
+
+      - name: Build Vite Production Bundles
+        run: npm run build
+
+      - name: Archive Production Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: aicte-kosh-dist-node-${{ matrix.node-version }}
+          path: dist/
+          retention-days: 7

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: AICTE Official Support Portal
+    url: https://www.aicte-india.org
+    about: Official grievances, regulatory guidelines, and APH 2026-27 documentation.
+  - name: Security Vulnerability Reporting
+    url: https://github.com/aicte-kosh-rakshak/security
+    about: Report sensitive vulnerabilities following our SECURITY.md policy.
