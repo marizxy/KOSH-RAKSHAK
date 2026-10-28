@@ -90,20 +90,23 @@ def verify_actuarial_compounding(
     }
 
 if HAS_FASTAPI:
-    app = FastAPI(
-        title="AICTE KOSH-Rakshak AI Forensics API",
-        version="2.6.4",
-        description="Error Level Analysis (ELA) and Actuarial Compound Math Forensics"
-    )
+    try:
+        app = FastAPI(
+            title="AICTE KOSH-Rakshak AI Forensics API",
+            version="2.6.4",
+            description="Error Level Analysis (ELA) and Actuarial Compound Math Forensics"
+        )
 
-    @app.get("/")
-    def root():
-        return {"service": "AICTE KOSH-Rakshak AI Forensics", "status": "ONLINE"}
+        @app.get("/")
+        def root():
+            return {"service": "AICTE KOSH-Rakshak AI Forensics", "status": "ONLINE"}
 
-    @app.post("/analyze-ela")
-    async def analyze_ela_endpoint(file: UploadFile = File(...)):
-        content = await file.read()
-        return compute_ela(content)
+        @app.post("/analyze-ela")
+        async def analyze_ela_endpoint(file: UploadFile = File(...)):
+            content = await file.read()
+            return compute_ela(content)
+    except Exception as exc:
+        app = None
 
 if __name__ == "__main__":
     print("Testing Actuarial Compound Math on genuine vs forged instruments:")

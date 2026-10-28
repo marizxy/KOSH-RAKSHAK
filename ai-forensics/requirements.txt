@@ -1,11 +1,12 @@
 # ==============================================================================
 # AICTE KOSH-RAKSHAK: AI FORENSICS ENGINE REQUIREMENTS
-# Python 3.10+ • OpenCV • PyTorch • Tesseract OCR
+# Python 3.10+ • OpenCV • Tesseract OCR
 # ==============================================================================
 
 fastapi==0.111.0
 uvicorn[standard]==0.30.1
 pydantic==2.7.4
+python-multipart>=0.0.9
 
 # Computer Vision & Image Forensics
 opencv-python-headless==4.9.0.80
@@ -16,10 +17,6 @@ numpy==1.26.4
 # Document OCR & Text Extraction
 pytesseract==0.3.10
 pdf2image==1.17.0
-
-# Deep Learning (Optional Feature Extraction)
-torch==2.3.0 --extra-index-url https://download.pytorch.org/whl/cpu
-torchvision==0.18.0 --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Financial Mathematics & Testing
 pytest==8.2.2
